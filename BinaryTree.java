@@ -89,106 +89,119 @@ public class BinaryTree < T > {
 			count++;
 			}
 
-			return count;
-		}
+		return count;
+	}
+	
+	public boolean isIsomorphic(BinaryTree<T> otherTree) {
+		BinaryNode thisRoot = root;
+		return isIsomorphic(thisRoot, otherTree.root);	
+	} //checks whether two binary trees have the same structure and the same values
+	
+	private isIsomorphic(BinaryNode root1, BinaryNode root2) {
+		boolean same = true;
 		
-		public void inorderTraversal() {
-			Stack < BinaryNode < T >> nodeStack = new Stack < BinaryNode < T >> ();
-			BinaryNode < T > currentNode = root;
+		if((root1.getRightChild() == null && root1.getLeftChild() == null) && (root2.getRightChild() == null && root2.getLeftChild() == null))
+			return same;
+		if(!root1.equals(root2))
+			same = false;
+		
+		return (isIsomorphic(root1.getRightChild(), root2.getRightChild()) == isIsomorphic(root1.getLeftChild(), root2.getLeftChild()) ? true:false);
+		
+	}
 
-			while (!nodeStack.empty() || currentNode != null) {
-				while (currentNode != null) {
-					nodeStack.push(currentNode);
-					currentNode = currentNode.getLeftChild();
-				}
-				if (!nodeStack.empty()) {
-					BinaryNode < T > nextNode = nodeStack.pop();
-					System.out.println(nextNode.getData());
-					currentNode = nextNode.getRightChild();
-				}
+		
+	public void inorderTraversal() {
+		Stack < BinaryNode < T >> nodeStack = new Stack < BinaryNode < T >> ();
+		BinaryNode < T > currentNode = root;
+
+		while (!nodeStack.empty() || currentNode != null) {
+			while (currentNode != null) {
+				nodeStack.push(currentNode);
+				currentNode = currentNode.getLeftChild();
+			}
+			if (!nodeStack.empty()) {
+				BinaryNode < T > nextNode = nodeStack.pop();
+				System.out.println(nextNode.getData());
+				currentNode = nextNode.getRightChild();
 			}
 		}
+	}
 
-		public Iterator < T > getPreorderIterator() {
-			return new PreorderIterator();
-		}
+	public Iterator < T > getPreorderIterator() {
+		return new PreorderIterator();
+	}
 
-		public Iterator < T > getInorderIterator() {
-			return new InorderIterator();
-		}
+	public Iterator < T > getInorderIterator() {
+		return new InorderIterator();
+	}
 
-		private class PreorderIterator implements Iterator < T > {
-			private Stack < BinaryNode < T >> nodeStack;
+	private class PreorderIterator implements Iterator < T > {
+		private Stack < BinaryNode < T >> nodeStack;
+		public PreorderIterator() {
+			nodeStack = new Stack < BinaryNode < T >> ();
+			if (root != null) nodeStack.push(root);
+		} // end default constructor
 
-			public PreorderIterator() {
-				nodeStack = new Stack < BinaryNode < T >> ();
-				if (root != null) nodeStack.push(root);
-			} // end default constructor
+		public boolean hasNext() {
+			return !nodeStack.isEmpty();
+		} // end hasNext
 
-			public boolean hasNext() {
-				return !nodeStack.isEmpty();
-			} // end hasNext
+		public T next() {
+			BinaryNode < T > nextNode;
+			if (hasNext()) {
+				nextNode = nodeStack.pop();
+				BinaryNode < T > leftChild = nextNode.getLeftChild();
+				BinaryNode < T > rightChild = nextNode.getRightChild();
 
-			public T next() {
-				BinaryNode < T > nextNode;
+				// push into stack in reverse order of recursive calls
+				if (rightChild != null) nodeStack.push(rightChild);
 
-				if (hasNext()) {
-					nextNode = nodeStack.pop();
-					BinaryNode < T > leftChild = nextNode.getLeftChild();
-					BinaryNode < T > rightChild = nextNode.getRightChild();
+				if (leftChild != null) nodeStack.push(leftChild);
+			} else { throw new NoSuchElementException();}
+		
+			return nextNode.getData();
+		} // end next
 
-					// push into stack in reverse order of recursive calls
-					if (rightChild != null) nodeStack.push(rightChild);
+		public void remove() {
+			throw new UnsupportedOperationException();
+		} // end remove
+	} // end PreorderIterator
 
-					if (leftChild != null) nodeStack.push(leftChild);
-				} else {
-					throw new NoSuchElementException();
-				}
-				return nextNode.getData();
-			} // end next
+	private class InorderIterator implements Iterator < T > {
+		private Stack < BinaryNode < T >> nodeStack;
+		private BinaryNode < T > currentNode;
+		public InorderIterator() {
+			nodeStack = new Stack < BinaryNode < T >> ();
+			currentNode = root;
+		} // end default constructor
 
-			public void remove() {
-				throw new UnsupportedOperationException();
-			} // end remove
-		} // end PreorderIterator
+		public boolean hasNext() {
+			return !nodeStack.isEmpty() || (currentNode != null);
+		} // end hasNext
 
-		private class InorderIterator implements Iterator < T > {
-			private Stack < BinaryNode < T >> nodeStack;
-			private BinaryNode < T > currentNode;
-			public InorderIterator() {
-				nodeStack = new Stack < BinaryNode < T >> ();
-				currentNode = root;
-			} // end default constructor
+		public T next() {
+			BinaryNode < T > nextNode = null;
 
-
-			public boolean hasNext() {
-				return !nodeStack.isEmpty() || (currentNode != null);
-			} // end hasNext
-
-
-			public T next() {
-				BinaryNode < T > nextNode = null;
-				// find leftmost node with no left child
-				while (currentNode != null) {
-					nodeStack.push(currentNode);
-					currentNode = currentNode.getLeftChild();
-				} // end while
+			// find leftmost node with no left child
+			while (currentNode != null) {
+				nodeStack.push(currentNode);
+				currentNode = currentNode.getLeftChild();
+			} // end while
 				// get leftmost node, then move to its right subtree
-				if (!nodeStack.isEmpty()) {
-					nextNode = nodeStack.pop();
-					currentNode = nextNode.getRightChild();
-				} else throw new NoSuchElementException();
-				return nextNode.getData();
-			} // end next
+			if (!nodeStack.isEmpty()) {
+				nextNode = nodeStack.pop();
+				currentNode = nextNode.getRightChild();
+			} else throw new NoSuchElementException();
+			return nextNode.getData();
+		} // end next
+
+		public void remove() {
+			throw new UnsupportedOperationException();
+		} // end remove
+
+	} // end InorderIterator
 
 
-			public void remove() {
-				throw new UnsupportedOperationException();
-			} // end remove
 
-		} // end InorderIterator
-
-
-
-	} // end BinaryTree
+} // end BinaryTree
 	
