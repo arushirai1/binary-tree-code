@@ -89,106 +89,101 @@ public class BinaryTree < T > {
 			count++;
 			}
 
-			return count;
-		}
+		return count;
+	}
 		
-		public void inorderTraversal() {
-			Stack < BinaryNode < T >> nodeStack = new Stack < BinaryNode < T >> ();
-			BinaryNode < T > currentNode = root;
+	public void inorderTraversal() {
+		Stack < BinaryNode < T >> nodeStack = new Stack < BinaryNode < T >> ();
+		BinaryNode < T > currentNode = root;
 
-			while (!nodeStack.empty() || currentNode != null) {
-				while (currentNode != null) {
-					nodeStack.push(currentNode);
-					currentNode = currentNode.getLeftChild();
-				}
-				if (!nodeStack.empty()) {
-					BinaryNode < T > nextNode = nodeStack.pop();
-					System.out.println(nextNode.getData());
-					currentNode = nextNode.getRightChild();
-				}
+		while (!nodeStack.empty() || currentNode != null) {
+			while (currentNode != null) {
+				nodeStack.push(currentNode);
+				currentNode = currentNode.getLeftChild();
+			}
+			if (!nodeStack.empty()) {
+				BinaryNode < T > nextNode = nodeStack.pop();
+				System.out.println(nextNode.getData());
+				currentNode = nextNode.getRightChild();
 			}
 		}
+	}
 
-		public Iterator < T > getPreorderIterator() {
-			return new PreorderIterator();
-		}
+	public Iterator < T > getPreorderIterator() {
+		return new PreorderIterator();
+	}
 
-		public Iterator < T > getInorderIterator() {
-			return new InorderIterator();
-		}
+	public Iterator < T > getInorderIterator() {
+		return new InorderIterator();
+	}
 
-		private class PreorderIterator implements Iterator < T > {
-			private Stack < BinaryNode < T >> nodeStack;
+	private class PreorderIterator implements Iterator < T > {
+		private Stack < BinaryNode < T >> nodeStack;
+		public PreorderIterator() {
+			nodeStack = new Stack < BinaryNode < T >> ();
+			if (root != null) nodeStack.push(root);
+		} // end default constructor
 
-			public PreorderIterator() {
-				nodeStack = new Stack < BinaryNode < T >> ();
-				if (root != null) nodeStack.push(root);
-			} // end default constructor
+		public boolean hasNext() {
+			return !nodeStack.isEmpty();
+		} // end hasNext
 
-			public boolean hasNext() {
-				return !nodeStack.isEmpty();
-			} // end hasNext
+		public T next() {
+			BinaryNode < T > nextNode;
+			if (hasNext()) {
+				nextNode = nodeStack.pop();
+				BinaryNode < T > leftChild = nextNode.getLeftChild();
+				BinaryNode < T > rightChild = nextNode.getRightChild();
 
-			public T next() {
-				BinaryNode < T > nextNode;
+				// push into stack in reverse order of recursive calls
+				if (rightChild != null) nodeStack.push(rightChild);
 
-				if (hasNext()) {
-					nextNode = nodeStack.pop();
-					BinaryNode < T > leftChild = nextNode.getLeftChild();
-					BinaryNode < T > rightChild = nextNode.getRightChild();
+				if (leftChild != null) nodeStack.push(leftChild);
+			} else { throw new NoSuchElementException();}
+		
+			return nextNode.getData();
+		} // end next
 
-					// push into stack in reverse order of recursive calls
-					if (rightChild != null) nodeStack.push(rightChild);
+		public void remove() {
+			throw new UnsupportedOperationException();
+		} // end remove
+	} // end PreorderIterator
 
-					if (leftChild != null) nodeStack.push(leftChild);
-				} else {
-					throw new NoSuchElementException();
-				}
-				return nextNode.getData();
-			} // end next
+	private class InorderIterator implements Iterator < T > {
+		private Stack < BinaryNode < T >> nodeStack;
+		private BinaryNode < T > currentNode;
+		public InorderIterator() {
+			nodeStack = new Stack < BinaryNode < T >> ();
+			currentNode = root;
+		} // end default constructor
 
-			public void remove() {
-				throw new UnsupportedOperationException();
-			} // end remove
-		} // end PreorderIterator
+		public boolean hasNext() {
+			return !nodeStack.isEmpty() || (currentNode != null);
+		} // end hasNext
 
-		private class InorderIterator implements Iterator < T > {
-			private Stack < BinaryNode < T >> nodeStack;
-			private BinaryNode < T > currentNode;
-			public InorderIterator() {
-				nodeStack = new Stack < BinaryNode < T >> ();
-				currentNode = root;
-			} // end default constructor
+		public T next() {
+			BinaryNode < T > nextNode = null;
 
-
-			public boolean hasNext() {
-				return !nodeStack.isEmpty() || (currentNode != null);
-			} // end hasNext
-
-
-			public T next() {
-				BinaryNode < T > nextNode = null;
-				// find leftmost node with no left child
-				while (currentNode != null) {
-					nodeStack.push(currentNode);
-					currentNode = currentNode.getLeftChild();
-				} // end while
+			// find leftmost node with no left child
+			while (currentNode != null) {
+				nodeStack.push(currentNode);
+				currentNode = currentNode.getLeftChild();
+			} // end while
 				// get leftmost node, then move to its right subtree
-				if (!nodeStack.isEmpty()) {
-					nextNode = nodeStack.pop();
-					currentNode = nextNode.getRightChild();
-				} else throw new NoSuchElementException();
-				return nextNode.getData();
-			} // end next
+			if (!nodeStack.isEmpty()) {
+				nextNode = nodeStack.pop();
+				currentNode = nextNode.getRightChild();
+			} else throw new NoSuchElementException();
+			return nextNode.getData();
+		} // end next
+
+		public void remove() {
+			throw new UnsupportedOperationException();
+		} // end remove
+
+	} // end InorderIterator
 
 
-			public void remove() {
-				throw new UnsupportedOperationException();
-			} // end remove
 
-		} // end InorderIterator
-
-
-
-	} // end BinaryTree
+} // end BinaryTree
 	
