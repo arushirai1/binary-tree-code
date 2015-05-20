@@ -91,6 +91,24 @@ public class BinaryTree < T > {
 
 		return count;
 	}
+	
+	public boolean isIsomorphic(BinaryTree<T> otherTree) {
+		BinaryNode thisRoot = root;
+		return isIsomorphic(thisRoot, otherTree.root);	
+	} //checks whether two binary trees have the same structure and the same values
+	
+	private isIsomorphic(BinaryNode root1, BinaryNode root2) {
+		boolean same = true;
+		
+		if((root1.getRightChild() == null && root1.getLeftChild() == null) && (root2.getRightChild() == null && root2.getLeftChild() == null))
+			return same;
+		if(!root1.equals(root2))
+			same = false;
+		
+		return (isIsomorphic(root1.getRightChild(), root2.getRightChild()) == isIsomorphic(root1.getLeftChild(), root2.getLeftChild()) ? true:false);
+		
+	}
+
 		
 	public void inorderTraversal() {
 		Stack < BinaryNode < T >> nodeStack = new Stack < BinaryNode < T >> ();
